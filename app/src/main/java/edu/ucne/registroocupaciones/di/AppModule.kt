@@ -10,7 +10,7 @@ import dagger.hilt.components.SingletonComponent
 import edu.ucne.registroocupaciones.data.db.OcupacionDatabase
 import edu.ucne.registroocupaciones.data.local.dao.OcupacionDao
 import edu.ucne.registroocupaciones.data.repository.OcupacionRepositoryImpl
-import edu.ucne.registroocupaciones.domain.repository.OcupacionRepository
+import edu.ucne.registroocupaciones.domain.ocupaciones.repository.OcupacionRepository
 import javax.inject.Singleton
 
 @InstallIn(
