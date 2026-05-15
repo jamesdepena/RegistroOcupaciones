@@ -1,4 +1,4 @@
-package edu.ucne.registroocupaciones.presentation.ocupacion.navigation
+package edu.ucne.registroocupaciones.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
