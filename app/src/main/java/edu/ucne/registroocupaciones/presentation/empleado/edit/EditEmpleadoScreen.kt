@@ -21,8 +21,12 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -155,13 +159,44 @@ fun EditEmpleadoBody(
 
                     Spacer(Modifier.height(8.dp))
 
-                    OutlinedTextField(
-                        value = state.sexo,
-                        onValueChange = { onEvent(EditEmpleadoUiEvent.sexoChanged(it)) },
-                        label = { Text("Sexo") },
-                        isError = state.sexoError != null,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    var expandedSexo by remember { mutableStateOf(false) }
+                    val opcionesSexo = listOf("Masculino", "Femenino")
+
+                    ExposedDropdownMenuBox(
+                        expanded = expandedSexo,
+                        onExpandedChange = { expandedSexo = !expandedSexo }
+                    ) {
+                        OutlinedTextField(
+                            value = state.sexo,
+                            onValueChange = { },
+                            readOnly = true,
+                            label = { Text("Sexo") },
+                            trailingIcon = {
+                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedSexo)
+                            },
+                            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                            isError = state.sexoError != null,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                        )
+
+                        ExposedDropdownMenu(
+                            expanded = expandedSexo,
+                            onDismissRequest = { expandedSexo = false }
+                        ) {
+                            opcionesSexo.forEach { opcion ->
+                                DropdownMenuItem(
+                                    text = { Text(text = opcion) },
+                                    onClick = {
+                                        onEvent(EditEmpleadoUiEvent.sexoChanged(opcion))
+                                        expandedSexo = false
+                                    },
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                )
+                            }
+                        }
+                    }
                     state.sexoError?.let { Text(text = it, color = Color.Red) }
 
                     Spacer(Modifier.height(8.dp))
