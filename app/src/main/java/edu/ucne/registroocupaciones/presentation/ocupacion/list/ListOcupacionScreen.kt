@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
@@ -34,6 +35,7 @@ import edu.ucne.registroocupaciones.domain.ocupaciones.model.Ocupacion
 
 @Composable
 fun OcupacionListScreen(
+    onDrawer: () -> Unit,
     goToOcupacion: (Int) -> Unit,
     createOcupacion: () -> Unit,
     viewModel: ListOcupacionViewModel = hiltViewModel()
@@ -42,6 +44,7 @@ fun OcupacionListScreen(
 
     OcupacionListBody(
         state = state,
+        onDrawer = onDrawer,
         onEvent = { event ->
             when (event) {
                 is ListOcupacionUiEvent.Edit -> goToOcupacion(event.id)
@@ -56,12 +59,18 @@ fun OcupacionListScreen(
 @Composable
 private fun OcupacionListBody(
     state: ListOcupacionUiState,
+    onDrawer: () -> Unit,
     onEvent: (ListOcupacionUiEvent) -> Unit
 ) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text("Listado de Ocupaciones") },
+                navigationIcon = {
+                    IconButton(onClick = onDrawer) {
+                        Icon(Icons.Default.Menu, contentDescription = "Menú")
+                    }
+                }
             )
         },
         floatingActionButton = {
@@ -117,10 +126,9 @@ private fun OcupacionCard(
                 Text(ocupacion.descripcion, style = MaterialTheme.typography.titleMedium)
                 Text("Sueldo: ${ocupacion.sueldo}", style = MaterialTheme.typography.bodyMedium)
             }
-            IconButton(
-                onClick = onClick
-
-            ) { Icon(Icons.Default.Edit, contentDescription = "Editar") }
+            IconButton(onClick = onClick) {
+                Icon(Icons.Default.Edit, contentDescription = "Editar")
+            }
             IconButton(onClick = { onDelete(ocupacion.ocupacionId) }) {
                 Icon(Icons.Default.Delete, contentDescription = "Eliminar")
             }
@@ -139,6 +147,7 @@ fun OcupacionListPreview() {
                     Ocupacion(2, "Ingeniero Civil", 33000.22),
                 )
             ),
+            onDrawer = {},
             onEvent = {}
         )
     }

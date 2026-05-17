@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ElevatedCard
@@ -42,6 +43,7 @@ fun EditOcupacionScreen(
     ocupacionId: Int?,
     viewModel: EditOcupacionViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit,
+    onDrawer: () -> Unit,
 
     ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -59,7 +61,8 @@ fun EditOcupacionScreen(
     EditOcupacionBody(
         state = state,
         onEvent = viewModel::onEvent,
-        onNavigateBack = onNavigateBack
+        onNavigateBack = onNavigateBack,
+        onDrawer = onDrawer
     )
 }
 
@@ -69,11 +72,17 @@ private fun EditOcupacionBody(
     state: EditOcupacionUiState,
     onEvent: (EditOcupacionUiEvent) -> Unit,
     onNavigateBack: () -> Unit,
-) {
+    onDrawer: () -> Unit,
+    ) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text(if (state.isNew) "Nueva Ocupación" else "Editar Ocupación") },
+                navigationIcon = {
+                    IconButton(onClick = onDrawer) {
+                        Icon(Icons.Default.Menu, contentDescription = "Menú")
+                    }
+                },
                 actions = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Regresar")
@@ -148,6 +157,7 @@ fun EditOcupacionPreview() {
             state = EditOcupacionUiState(descripcion = "Ingeniero en Sístemas", sueldo = 642500.50),
             onEvent = {},
             onNavigateBack = {},
+            onDrawer = {}
         )
     }
 }
