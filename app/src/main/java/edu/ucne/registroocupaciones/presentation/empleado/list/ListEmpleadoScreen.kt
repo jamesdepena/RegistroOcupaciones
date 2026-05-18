@@ -1,4 +1,4 @@
-package edu.ucne.registroocupaciones.presentation.ocupacion.list
+package edu.ucne.registroocupaciones.presentation.empleado.list
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -27,28 +27,28 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import edu.ucne.registroocupaciones.domain.ocupaciones.model.Ocupacion
+import edu.ucne.registroocupaciones.domain.empleados.model.Empleado
+import java.time.format.DateTimeFormatter
 
 @Composable
-fun OcupacionListScreen(
+fun EmpleadoListScreen(
+    goToEmpleado: (Int) -> Unit,
+    createEmpleado: () -> Unit,
+    viewModel: ListEmpleadoViewModel = hiltViewModel(),
     onDrawer: () -> Unit,
-    goToOcupacion: (Int) -> Unit,
-    createOcupacion: () -> Unit,
-    viewModel: ListOcupacionViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    OcupacionListBody(
+    EmpleadoListBody(
         state = state,
         onDrawer = onDrawer,
         onEvent = { event ->
             when (event) {
-                is ListOcupacionUiEvent.Edit -> goToOcupacion(event.id)
-                is ListOcupacionUiEvent.CreateNew -> createOcupacion()
+                is ListEmpleadoUiEvent.Edit -> goToEmpleado(event.id)
+                is ListEmpleadoUiEvent.CreateNew -> createEmpleado()
                 else -> viewModel.onEvent(event)
             }
         }
@@ -57,24 +57,23 @@ fun OcupacionListScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun OcupacionListBody(
-    state: ListOcupacionUiState,
+fun EmpleadoListBody(
+    state: ListEmpleadoUiState,
+    onEvent: (ListEmpleadoUiEvent) -> Unit,
     onDrawer: () -> Unit,
-    onEvent: (ListOcupacionUiEvent) -> Unit
 ) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Listado de Ocupaciones") },
+                title = { Text("Listado de Empleados") },
                 navigationIcon = {
                     IconButton(onClick = onDrawer) {
                         Icon(Icons.Default.Menu, contentDescription = "Menú")
                     }
                 }
             )
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = { onEvent(ListOcupacionUiEvent.CreateNew) }) {
+        }, floatingActionButton = {
+            FloatingActionButton(onClick = { onEvent(ListEmpleadoUiEvent.CreateNew) }) {
                 Text("+")
             }
         }
@@ -83,6 +82,7 @@ private fun OcupacionListBody(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
+
         ) {
             if (state.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -92,21 +92,21 @@ private fun OcupacionListBody(
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                items(state.ocupaciones) { ocupacion ->
-                    OcupacionCard(
-                        ocupacion = ocupacion,
-                        onClick = { onEvent(ListOcupacionUiEvent.Edit(ocupacion.ocupacionId)) },
-                        onDelete = { onEvent(ListOcupacionUiEvent.Delete(ocupacion.ocupacionId)) }
-                    )
-                }
+               items(state.empleados) { empleado ->
+                   EmpleadoCard(
+                       empleado = empleado,
+                       onClick = { onEvent(ListEmpleadoUiEvent.Edit(empleado.empleadoId)) },
+                       onDelete = { onEvent(ListEmpleadoUiEvent.Delete(empleado.empleadoId)) }
+                   )
+               }
             }
         }
     }
 }
 
 @Composable
-private fun OcupacionCard(
-    ocupacion: Ocupacion,
+private fun EmpleadoCard(
+    empleado: Empleado,
     onClick: () -> Unit,
     onDelete: (Int) -> Unit,
 ) {
@@ -122,33 +122,23 @@ private fun OcupacionCard(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(ocupacion.descripcion, style = MaterialTheme.typography.titleMedium)
-                Text("Sueldo: ${ocupacion.sueldo}", style = MaterialTheme.typography.bodyMedium)
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                val fechaFormato = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+                val fechaFormateada = empleado.fechaIngreso.format(fechaFormato)
+
+                Text(empleado.nombres, style = MaterialTheme.typography.titleMedium)
+                Text("Ingresó el: ${fechaFormateada}", style = MaterialTheme.typography.bodyMedium)
+                Text("Sexo: ${empleado.sexo}", style = MaterialTheme.typography.bodyMedium)
+                Text("Sueldo: ${empleado.sueldo}", style = MaterialTheme.typography.bodyMedium)
             }
             IconButton(onClick = onClick) {
                 Icon(Icons.Default.Edit, contentDescription = "Editar")
             }
-            IconButton(onClick = { onDelete(ocupacion.ocupacionId) }) {
+            IconButton(onClick = { onDelete(empleado.empleadoId) }) {
                 Icon(Icons.Default.Delete, contentDescription = "Eliminar")
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun OcupacionListPreview() {
-    MaterialTheme {
-        OcupacionListBody(
-            state = ListOcupacionUiState(
-                ocupaciones = listOf(
-                    Ocupacion(1, "Ingeniero en Sístemas", 642500.50),
-                    Ocupacion(2, "Ingeniero Civil", 33000.22),
-                )
-            ),
-            onDrawer = {},
-            onEvent = {}
-        )
     }
 }

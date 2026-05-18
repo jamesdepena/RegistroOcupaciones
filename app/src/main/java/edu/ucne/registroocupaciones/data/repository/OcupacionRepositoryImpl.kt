@@ -3,8 +3,8 @@ package edu.ucne.registroocupaciones.data.repository
 import edu.ucne.registroocupaciones.data.local.dao.OcupacionDao
 import edu.ucne.registroocupaciones.data.mapper.toDomain
 import edu.ucne.registroocupaciones.data.mapper.toEntity
-import edu.ucne.registroocupaciones.domain.model.Ocupacion
-import edu.ucne.registroocupaciones.domain.repository.OcupacionRepository
+import edu.ucne.registroocupaciones.domain.ocupaciones.model.Ocupacion
+import edu.ucne.registroocupaciones.domain.ocupaciones.repository.OcupacionRepository
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

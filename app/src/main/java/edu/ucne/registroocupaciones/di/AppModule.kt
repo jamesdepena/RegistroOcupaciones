@@ -8,9 +8,12 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import edu.ucne.registroocupaciones.data.db.OcupacionDatabase
+import edu.ucne.registroocupaciones.data.local.dao.EmpleadoDao
 import edu.ucne.registroocupaciones.data.local.dao.OcupacionDao
+import edu.ucne.registroocupaciones.data.repository.EmpleadoRepositoryImpl
 import edu.ucne.registroocupaciones.data.repository.OcupacionRepositoryImpl
-import edu.ucne.registroocupaciones.domain.repository.OcupacionRepository
+import edu.ucne.registroocupaciones.domain.empleados.repository.EmpleadoRepository
+import edu.ucne.registroocupaciones.domain.ocupaciones.repository.OcupacionRepository
 import javax.inject.Singleton
 
 @InstallIn(
@@ -26,7 +29,9 @@ object AppModule {
             appContext,
             OcupacionDatabase::class.java,
             "ocupacion_database"
-        ).build()
+        ).fallbackToDestructiveMigration()
+            .build()
+
 
     @Provides
     @Singleton
@@ -45,5 +50,22 @@ object AppModule {
     fun provideOcupacionRepository(impl: OcupacionRepositoryImpl): OcupacionRepository {
         return impl
     }
-}
 
+    @Provides
+    @Singleton
+    fun provideEmpleadoDao(ocupacionDatabase: OcupacionDatabase): EmpleadoDao {
+        return ocupacionDatabase.empleadoDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideEmpleadoRepositoryImpl(empleadoDao: EmpleadoDao): EmpleadoRepositoryImpl {
+        return EmpleadoRepositoryImpl(empleadoDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideEmpleadoRepository(impl: EmpleadoRepositoryImpl): EmpleadoRepository {
+        return impl
+    }
+}
