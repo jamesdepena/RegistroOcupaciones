@@ -91,4 +91,18 @@ dependencies {
 
     //API Desugaring
     coreLibraryDesugaring(libs.desugar.jdk.libs)
+
+    // Unit Testing
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
+    testImplementation(libs.androidx.core.testing)
+
+    // Hilt Testing
+    testImplementation(libs.hilt.android.testing)
+    kspTest(libs.hilt.android.compiler)
+    androidTestImplementation(libs.hilt.android.testing.v259)
+    kspAndroidTest(libs.hilt.android.compiler)
+
+    // Room Testing
+    testImplementation(libs.androidx.room.testing)
 }
